@@ -36,7 +36,7 @@ class ObjectModifier
 		}
 
 		// Parse modifier parameter string
-		list($modifierName, $params) = self::parseModifierParameterString($nextModifier);
+		list($modifierName, $modifierParams) = self::parseModifierParameterString($nextModifier);
 
 		// Apply modifier on the value
 		switch ($modifierName) {
@@ -49,12 +49,6 @@ class ObjectModifier
 				if (is_null($value)) {
 					return '';
 				}
-				break;
-			case "fwdt":
-			case "fwdtemplate":
-				$moduleName = lavnn('module', $modifierParams, '');
-				$templateName = lavnn('name', $modifierParams, '');
-				$value = TextProcessor::doTemplate($moduleName, $templateName, $params);
 				break;
 			case "htmlcomment":
 				$value = '<!--'.print_r($value).'-->';

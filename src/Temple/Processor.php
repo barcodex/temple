@@ -278,7 +278,7 @@ class Processor
 			'newline' =>  PHP_EOL
 		);
 
-		return lavnn($glueCode, $mapping, '');
+		return Util::lavnn($glueCode, $mapping, '');
 	}
 
 	public static function listLabels($text)

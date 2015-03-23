@@ -51,7 +51,7 @@ class ArrayModifier
 				break;
 			case "ifempty":
 			case "stopifnotempty":
-				$default = lavnn('default', $modifierParams, '');
+				$default = Util::lavnn('default', $modifierParams, '');
 				if (count($value) != 0) {
 					return "";
 				} elseif ($default != '') {
@@ -68,17 +68,17 @@ class ArrayModifier
 				$value = $value[count($value)];
 				break;
 			case "field":
-				$fieldName = lavnn('name', $modifierParams, '');
-				$value = lavnn($fieldName, $value, '');
+				$fieldName = Util::lavnn('name', $modifierParams, '');
+				$value = Util::lavnn($fieldName, $value, '');
 				break;
 			case "buildquerystring":
 				$value = '?' . http_build_query($value);
 				break;
 			case "cutcolumn":
-				$columnName = lavnn('column', $params, '');
+				$columnName = Util::lavnn('column', $params, '');
 				$output = array();
 				foreach ($value as $row) {
-					$columnValue = lavnn($columnName, $row, '');
+					$columnValue = Util::lavnn($columnName, $row, '');
 					if ($columnValue != '') {
 						$output[$columnValue] = $columnValue;
 					}
@@ -86,12 +86,12 @@ class ArrayModifier
 				$value = $output;
 				break;
 			case "join":
-				$glue = lavnn('glue', $modifierParams, '');
-				$value = join(TextProcessor::glueDecoder($glue), $value);
+				$glue = Util::lavnn('glue', $modifierParams, '');
+				$value = join(Processor::glueDecoder($glue), $value);
 				break;
 			case "joincolumn":
-				$fieldName = lavnn('field', $modifierParams, '');
-				$glue = lavnn('glue', $modifierParams, '');
+				$fieldName = Util::lavnn('field', $modifierParams, '');
+				$glue = Util::lavnn('glue', $modifierParams, '');
 				$rowValues = array();
 				foreach ($value as $row) {
 					$fieldValue = $row[$fieldName] or '';
@@ -99,56 +99,15 @@ class ArrayModifier
 						$rowValues[] = $row[$fieldName];
 					}
 				}
-				$value = join(TextProcessor::glueDecoder($glue), $rowValues);
+				$value = join(Processor::glueDecoder($glue), $rowValues);
 				break;
 			case "htmlcomment":
 				$value = '<!--'.print_r($value, 1).'-->';
 				break;
-			case "fwdt":
-			case "fwdtemplate":
-				$moduleName = lavnn('module', $modifierParams, '');
-				$templateName = lavnn('name', $modifierParams, '');
-				$value = TextProcessor::doTemplate($moduleName, $templateName, $params);
-				break;
-			case "dot":
-			case "dotemplate":
-				$moduleName = lavnn('module', $modifierParams, '');
-				$templateName = lavnn('name', $modifierParams, '');
-                if ($moduleName != '' && $templateName != '') {
-                    $value = TextProcessor::doTemplate($moduleName, $templateName, $value);
-                } else {
-                    $value = '';
-                }
-				break;
-			case "rowtemplate":
-			case "looptemplate":
-			case "loopt":
-				$moduleName = lavnn('module', $modifierParams, '');
-				$templateName = lavnn('name', $modifierParams, '');
-				$headerTemplateName = lavnn('header', $modifierParams, '');
-				$noDataTemplateName = lavnn('nodata', $modifierParams, '');
-				if (count($value) > 0) {
-					$header = ($headerTemplateName != '') ? TextProcessor::doTemplate($moduleName, $headerTemplateName) : '';
-					$value = $header . TextProcessor::loopTemplate($moduleName, $templateName, $value);
-				} else {
-                    if ($noDataTemplateName != '') {
-                        $value = TextProcessor::doTemplate($moduleName, $noDataTemplateName);
-                    } else {
-						$value = '';
-					}
-				}
-				break;
-			case 'emptyt':
-				if (count($value) == 0) {
-					$moduleName = lavnn('module', $modifierParams, '');
-					$templateName = lavnn('name', $modifierParams, '');
-					$value = TextProcessor::doTemplate($moduleName, $templateName, $params);
-				}
-				break;
 			case 'replace':
-				$default = lavnn('default', $modifierParams, '');
-				$fallback = lavnn('fallback', $modifierParams, '');
-				$value = lavnn($fallback, $params, $default);
+				$default = Util::lavnn('default', $modifierParams, '');
+				$fallback = Util::lavnn('fallback', $modifierParams, '');
+				$value = Util::lavnn($fallback, $params, $default);
 				break;
 			case "ksort":
 				ksort($value);
@@ -164,11 +123,6 @@ class ArrayModifier
 				break;
 			case "json":
 				$value = json_encode($value);
-				break;
-			case 'options':
-				$keyField = lavnn('keyField', $modifierParams, 'id');
-				$valueField = lavnn('valueField', $modifierParams, 'name');
-				$value = join('', PageHelper::generateOptions($value, $keyField, $valueField));
 				break;
 		}
 
