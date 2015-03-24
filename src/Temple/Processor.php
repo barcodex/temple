@@ -8,9 +8,12 @@ namespace Temple;
  * Our templates are pretty dumb, flat and simple, they do not have any control flow.
  * All the work to build output from templates is given to controllers.
  * Templates are just fragments of texts with placeholders, and some of the placeholders can have modifiers.
- * There's no pre-compilation of templates.
- * Modifiers are independent of programming language, so whoever uses the templates, should support modifiers.
- * This class provides PHP implementation for processing the templates including applying modifiers.
+ * There's no pre-compilation of templates - we believe that trivial parsing of text strings should be quick enough.
+ * Processor class actually works with texts, and its consumer is responsible for reading/caching templates.
+ *
+ * Processor class is extendable:
+ *  - if tag syntax gets more complicated, overwrite doTag() and/or doTagContext() functions.
+ *  - if specific modifiers are to be introduced, overwrite applyModifier() to use the right derivative of Modifier
  *
  */
 class Processor
@@ -254,7 +257,7 @@ class Processor
 	}
 
 	/**
-	 * Cuts off one-line comment from the line
+	 * Cuts off one-line comment from the line (comment is identified by the hash symbol
 	 *
 	 * @param $line
 	 *
@@ -281,24 +284,4 @@ class Processor
 		return Util::lavnn($glueCode, $mapping, '');
 	}
 
-	public static function listLabels($text)
-	{
-		$labels = array();
-		$parts = explode('[[', $text); // beginnings of all placeholders
-
-		array_shift($parts); // ignore text before first placeholder
-		foreach ($parts as $part) {
-			list($tag, $staticText) = explode(']]', $part, 2); // placeholder and text before the next one
-			$labels[] = array(
-				'label' => $tag
-			);
-		}
-
-		return $labels;
-	}
-
-	public static function urlName($name)
-	{
-		return urlencode(strtolower(str_replace(' ', '_', $name)));
-	}
 }
