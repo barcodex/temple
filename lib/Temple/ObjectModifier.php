@@ -5,60 +5,63 @@ namespace Temple;
 class ObjectModifier
 	extends Modifier
 {
-	/** @inheritdoc */
-	public static function apply(
-		$value,
-		$modifierChain,
-		$params = array()
-	) {
-		$r = Runtime::getInstance();
+    /** @inheritdoc */
+    public static function apply(
+        $value,
+        $modifierChain,
+        $params = array()
+    )
+    {
+        // Check if variable is of array type
+        if (is_array($value)) {
+            return 'Array';
+        }
 
-		// Check if variable is of array type
-		if (is_array($value)) {
-			$r->addWarning('Attempt to use ObjectFilter on the array');
+        // Check if variable is not an object
+        if (!is_object($value)) {
+            return (string)$value;
+        }
 
-			return 'Array';
-		}
+        // Fetch the modifier to apply on the value
+        $nextModifier = array_shift($modifierChain);
 
-		// Check if variable is not an object
-		if (!is_object($value)) {
-			$r->addWarning('Attempt to use ObjectFilter on non-object');
+        // Check if modifier is valid
+        if ($nextModifier == '' && count($modifierChain) == 0) {
+            return $value;
+        }
 
-			return (string) $value;
-		}
+        // Parse modifier parameter string
+        list($modifierName, $modifierParams) = self::parseModifierParameterString($nextModifier);
 
-		// Fetch the modifier to apply on the value
-		$nextModifier = array_shift($modifierChain);
+        // Apply modifier on the value
+        $value = self::calculateValue($modifierName, $modifierParams, $value, $params);
 
-		// Check if modifier is valid
-		if ($nextModifier == '' && count($modifierChain) == 0) {
-			return $value;
-		}
+        // Do recursive call if there are more modifiers in the chain
+        return (count($modifierChain) > 0) ? Processor::applyModifier($value, $modifierChain, $params) : $value;
+    }
 
-		// Parse modifier parameter string
-		list($modifierName, $modifierParams) = self::parseModifierParameterString($nextModifier);
+    /** @inheritdoc */
+    public static function calculateValue($modifierName, $modifierParams, $value, $params)
+    {
+        switch ($modifierName) {
+            case 'ifnull':
+                if (!is_null($value)) {
+                    return '';
+                }
+                break;
+            case 'ifnotnull':
+                if (is_null($value)) {
+                    return '';
+                }
+                break;
+            case "htmlcomment":
+                $value = '<!--' . print_r($value) . '-->';
+                break;
+            case 'dump':
+                $value = print_r($value);
+                break;
+        }
 
-		// Apply modifier on the value
-		switch ($modifierName) {
-			case 'ifnull':
-				if (!is_null($value)) {
-					return '';
-				}
-				break;
-			case 'ifnotnull':
-				if (is_null($value)) {
-					return '';
-				}
-				break;
-			case "htmlcomment":
-				$value = '<!--'.print_r($value).'-->';
-				break;
-			case 'dump':
-				$value = print_r($value);
-				break;
-		}
-
-		// Do recursive call if there are more modifiers in the chain
-		return (count($modifierChain) > 0) ? Processor::applyModifier($value, $modifierChain, $params) : $value;
-	}
+        return $value;
+    }
 }

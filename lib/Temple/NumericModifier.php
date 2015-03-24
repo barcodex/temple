@@ -33,60 +33,68 @@ class NumericModifier
 		list($modifierName, $modifierParams) = self::parseModifierParameterString($nextModifier);
 
 		// Apply modifier on the value
-		switch ($modifierName) {
-			case 'iftrue':
-				if (!$value || empty($value)) {
-					return '';
-				}
-				break;
-			case 'iffalse':
-				if ($value && !empty($value)) {
-					return '';
-				}
-				break;
-			case 'ifnull':
-				if (!is_null($value)) {
-					return '';
-				}
-				break;
-			case 'ifnotnull':
-				if (is_null($value)) {
-					return '';
-				}
-				break;
-			case "htmlcomment":
-				$value = "<!--$value-->";
-				break;
-			case 'replace':
-				$default = Util::lavnn('default', $modifierParams, '');
-				$fallback = Util::lavnn('fallback', $modifierParams, '');
-				$value = Util::lavnn($fallback, $params, $default);
-				break;
-			case "checked":
-				$value = ($value == '1' ? 'checked' : '');
-				break;
-			case "fixbool":
-				$value = (bool) ($value);
-				break;
-			case 'round':
-				$value = round($value, Util::lavnn('digits', $modifierParams, 0));
-				break;
-			case 'money':
-				$value = round($value, 2);
-				break;
-			case 'date':
-				$value = date('d.m.Y H:i:s', $value);
-				break;
-			case 'thousands':
-				// @TODO make it configurable from locale. so far usable only for admin purposes
-				$value = number_format($value, 0, '', '.');
-				break;
-			case 'checkboxvalue':
-				$avalue = $value ? 'checked="checked"' : '';
-				break;
-		}
+        $value = self::calculateValue($modifierName, $modifierParams, $value, $params);
 
 		// Do recursive call if there are more modifiers in the chain
 		return (count($modifierChain) > 0) ? Processor::applyModifier($value, $modifierChain, $params) : $value;
 	}
+
+    /** @inheritdoc */
+    public static function calculateValue($modifierName, $modifierParams, $value, $params)
+    {
+        switch ($modifierName) {
+            case 'iftrue':
+                if (!$value || empty($value)) {
+                    return '';
+                }
+                break;
+            case 'iffalse':
+                if ($value && !empty($value)) {
+                    return '';
+                }
+                break;
+            case 'ifnull':
+                if (!is_null($value)) {
+                    return '';
+                }
+                break;
+            case 'ifnotnull':
+                if (is_null($value)) {
+                    return '';
+                }
+                break;
+            case "htmlcomment":
+                $value = "<!--$value-->";
+                break;
+            case 'replace':
+                $default = Util::lavnn('default', $modifierParams, '');
+                $fallback = Util::lavnn('fallback', $modifierParams, '');
+                $value = Util::lavnn($fallback, $params, $default);
+                break;
+            case "checked":
+                $value = ($value == '1' ? 'checked' : '');
+                break;
+            case "fixbool":
+                $value = (bool) ($value);
+                break;
+            case 'round':
+                $value = round($value, Util::lavnn('digits', $modifierParams, 0));
+                break;
+            case 'money':
+                $value = round($value, 2);
+                break;
+            case 'date':
+                $value = date('d.m.Y H:i:s', $value);
+                break;
+            case 'thousands':
+                // @TODO make it configurable from locale. so far usable only for admin purposes
+                $value = number_format($value, 0, '', '.');
+                break;
+            case 'checkboxvalue':
+                $avalue = $value ? 'checked="checked"' : '';
+                break;
+        }
+
+        return $value;
+    }
 }
