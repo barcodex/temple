@@ -79,7 +79,7 @@ In some cases, type of the modified value is changed during the processing - and
 Suddenly, we realize that Temple could be used for preparing SQL statements, too!
 
 ```sql
-UPDATE users SET fname='{{name.first|shortener?chars=50|dbsafe}}
+UPDATE users SET fname='{{name.first|shortener?chars=50|dbsafe}}'
 WHERE id = {{id|zero}}
 ```
 
@@ -107,7 +107,9 @@ It would look like this to extend a Modifier class:
 ```php
 <?php
 
-class BetterScalarModifier extends Temple\ScalarModifier 
+use Temple\ScalarModifier;
+
+class BetterScalarModifier extends ScalarModifier 
 {
     public static function calculateValue($modifierName, $modifierParams, $value, $params)
     {
@@ -129,7 +131,12 @@ And here is how we would extend Processor in order to use the new Modifier class
 ```php
 <?php
 
-class BetterProcessor extends Temple\Processor 
+use Temple\Processor;
+use Temple\ObjectModifier;
+use Temple\ArrayModifier;
+use Temple\NumericModifier;
+
+class BetterProcessor extends Processor 
 {
 	public static function applyModifier($value, $filters, $params = array()) 
 	{
