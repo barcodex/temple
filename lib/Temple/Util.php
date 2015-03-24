@@ -19,8 +19,9 @@ class Util
         for ($i = 0; $i < $limit - count($parts); $i++) {
             $parts[] = $filler;
         }
+        array_splice($parts, $limit);
 
-        return array_splice($input, $limit);
+        return $parts;
     }
 
     public static function lav($needle, $haystack, $default)
