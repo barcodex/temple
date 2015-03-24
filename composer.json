@@ -1,0 +1,16 @@
+{
+    "name": "barcodex/temple",
+    "type": "library",
+    "description": "Simple flat text processor",
+    "homepage": "http://www.tilpy.com",
+    "license": "MIT",
+    "authors": [
+        {"name": "Anvarzon Zurajev", "email": "anvarzon.zurajev@gmail.com"}
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "Temple\\": "lib/" }
+    }
+}
