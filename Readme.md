@@ -126,7 +126,11 @@ class BetterScalarModifier extends ScalarModifier
 }
 ```
 
-And here is how we would extend Processor in order to use the new Modifier class derivative:
+Because overloaded version of the method first checks its own support modifiers and calls the parent method if no match was found, you can also provide your own versions of standard modifiers. 
+For example, if you have special requirements for sanitization of SQL values in your queries, you can overload 'dbsafe' modifier.
+Another good reason to extend standard modifiers is to inject profiling/logging/validation/notifications code. 
+
+Here is how we would extend Processor in order to use the new Modifier class derivative:
 
 ```php
 <?php
@@ -159,7 +163,7 @@ You see that we just replaced ScalarModifier with BetterScalarModifier here beca
 
 Let's quickly take a look at all supported modifiers. They can be classified by the class that applies them, by the number of parameters they expect and by the type of the value they return.
 
-| modifier name | Modifier subclass(es) | type of output | parameters | comment |
+| Modifier name | Modifier subclass(es) | Type of output | Parameters | Comment |
 | ------------- | --------------------- | -------------- | ---------- | ------- |
 | uppercase     | ScalarModifier        | string         |            |         |
 | lowercase     | ScalarModifier        | string         |            |         |
@@ -167,4 +171,68 @@ Let's quickly take a look at all supported modifiers. They can be classified by 
 | htmlentities  | ScalarModifier        | string         |            | Escapes all HTML entities |
 | nohtml        | ScalarModifier        | string         |            | Strips all HTML tags |
 | htmlcomment   | ScalarModifier        | string         |            | Wraps with HTML comment syntax |
+| loremipsum    | ScalarModifier        | string         |            | Injects some text placeholder aka Lorem Ipsum |
+| fixurl        | ScalarModifier        | string         |            | makes sure that URL has http:// prefix |
+| urlencode     | ScalarModifier        | string         |            | Encodes the URL |
+| dbsafe        | ScalarModifier        | string         |            | Sanitizes the value to be injected into SQL query |
+| jssafe        | ScalarModifier        | string         |            | Sanitizes the value to be used as JavaScript literal |
+| htmlsafe      | ScalarModifier        | string         |            | Sanitizes the value to be used as HTML tag attribute value |
+| shortener     | ScalarModifier        | string         | words: int, chars:int | Shortens the text to given number of words (or characters, if words param was not specified) |
+| replace       | ScalarModifier        | string         | fallback: field name, default: string | Replaces value with another field (defined by 'default') from processing parameters. If fallback field is not found, 'default' value can be set |
+| fixfloat      | ScalarModifier        | float          |            | Extracts a floating point number from the value |
+| fixint        | ScalarModifier        | int            |            | Extracts an integer from the value |
+| fixbool       | ScalarModifier        | bool           |            | Converts value to true or false |
+| iftrue        | ScalarModifier        | string         |            | Keeps value intact if it evaluates to true, otherwise stops processing the pipeline and returns an empty string |
+| iffalse       | ScalarModifier        | string         |            | Keeps value intact if it evaluates to false, otherwise stops processing the pipeline and returns an empty string |
+| ifnull        | ScalarModifier        | string         |            | Keeps value intact if it is null, otherwise stops processing the pipeline and returns an empty string |
+| ifnotnull     | ScalarModifier        | string         |            | Keeps value intact if it is not null, otherwise stops processing the pipeline and returns an empty string |
+| tag           | ScalarModifier        | string         |            | Wraps the value with mustache {{ }}, thus making a Temple tag out of it |
+| length        | ScalarModifier, ArrayModifier | int | | Depending on value, returns either length of the string or the size of the array |
+| zero          | ScalarModifier        | string         |            | Explicitly converts an empty string to number zero |
+| wordcount     | ScalarModifier        | int            |            | Calculates number fo words in the text |
+| split         | ScalarModifier        | array          | delimiter: {'none' | 'space' | 'comma' | 'quotecomma' | 'colon' | 'semicolon' | 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
+| unserialize   | ScalarModifier        | array/null     |            | Assumes that value is a JSON and tries to decode it. Null is returned is JSON could be decoded |
+| gravatar      | ScalarModifier        | string         | size: int (default: 50) | Assumes that the value is an email and generates a url for gravatar image of given size |
+
+As you can see, sometimes modifiers seem to be redundant, because of automatic type conversions that PHP does for us. 
+But Temple syntax is designed to be backend-agnostic, so that controllers written in other programming languages could also work with the same templates.
+That's why it is encouraged to tolerate this redundancy and use casting modifiers even if  
  
+## Examples of modifiers
+ 
+Even though we delegate most of the work to fat controllers, combining the modifiers makes it possible to calculate some values in the template and even to emulate some control flow.
+
+### Calculating values
+
+Imagine that list of categories for the blog post is stored as JSON string in the database field 'categories'. We can show the number of assign categories without special preparation of the value in the controller:
+
+```html
+<div class="blog-post-title">{{title}} <span class="blog-post-categories-count">{{categories|unserialize|count}}</span></div>
+```
+
+### Faking the conditionals
+
+So, there are no real IF-conditionals, but you can stop processing the modifiers pipeline and return an empty string, if your controllers pre-evaluated the boolean expressions.
+
+Imagine that we want to show either user name or company name depending on client type and display this information using different styles. This can be done pretty easily with such template:
+
+```html
+<div class="client {{is_company|fixbool|iftrue|replace?default=company}}">{{display_name}}</div>
+```
+
+Placeholder called 'is_company' will be replaced with the word 'company' so that we could create a special CSS class called '.client.company' to show it differenty. 
+
+Of course, this means that our controller should do the job preparing the values. We must prepare 'display_name' depending on company type and also provide 'is_company' field:
+
+```php
+$userData['is_company'] = ($userData['company_name'] != '');
+$userData['display_name'] = ($userData['company_name'] == '') 
+    ? $userData['first_name'] . ' ' . $userData['last_name']
+    : $userData['company_name'];
+```
+
+In this example, using 'fixbool' modifier in the chain was just an example of HTML coder mistrusting the programmer of the controller ;) 
+Actually, PHP implementation of Temple explicitly converts the value to a boolean before checking it with iftrue/iffalse modifiers. 
+So if you trust PHP to convert nulls and empty strings to 'false', you can just use these modifiers without explicit typecast.
+But if you are planning to re-use templates between different language implementations of the processor, it never hurts to be more explicit.
+

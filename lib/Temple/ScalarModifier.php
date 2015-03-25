@@ -88,14 +88,6 @@ class ScalarModifier
             case "htmlentities":
                 $value = htmlentities($value);
                 break;
-            case "round":
-                if (is_numeric($value)) {
-                    $precision = Util::lavnn('digits', $modifierParams, 0);
-                    $value = round($value, $precision);
-                } else {
-                    $value = 0;
-                }
-                break;
             case "zero":
                 if ($value == '') {
                     $value = 0;
@@ -129,10 +121,7 @@ class ScalarModifier
             case 'replace':
                 $default = Util::lavnn('default', $modifierParams, '');
                 $fallback = Util::lavnn('fallback', $modifierParams, '');
-                $value = Util::lavnn($fallback, $params, $default);
-                break;
-            case "checked":
-                $value = ($value == '1' ? 'checked' : '');
+                $value = ($fallback == '') ? $default : Util::lavnn($fallback, $params, $default);
                 break;
             case "dbsafe":
                 $value = TextUtil::dbsafe($value);
@@ -209,7 +198,6 @@ class ScalarModifier
                 }
                 break;
             case "fixurl":
-                //@TODO more intelligent algorithm, please
                 $value = ($value == '') ? '#' : (substr($value, 0, 4) != 'http' ? 'http://' : '') . $value;
                 break;
             case "nohtml":
