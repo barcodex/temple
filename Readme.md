@@ -153,4 +153,18 @@ class BetterProcessor extends Processor
 }
 ```
 
-You see that we just replaces ScalarModifier with BetterScalarModifier here because it was the only extended class in our example
+You see that we just replaced ScalarModifier with BetterScalarModifier here because it was the only extended class in our example.
+
+## Reference of standard modifiers
+
+Let's quickly take a look at all supported modifiers. They can be classified by the class that applies them, by the number of parameters they expect and by the type of the value they return.
+
+| modifier name | Modifier subclass(es) | type of output | parameters | comment |
+| ------------- | --------------------- | -------------- | ---------- | ------- |
+| uppercase     | ScalarModifier        | string         |            |         |
+| lowercase     | ScalarModifier        | string         |            |         |
+| trim          | ScalarModifier        | string         |            |         |
+| htmlentities  | ScalarModifier        | string         |            | Escapes all HTML entities |
+| nohtml        | ScalarModifier        | string         |            | Strips all HTML tags |
+| htmlcomment   | ScalarModifier        | string         |            | Wraps with HTML comment syntax |
+ 
