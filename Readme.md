@@ -49,7 +49,7 @@ It means that caller of Temple\Processor is responsible to prepare all the data 
 
 So, if you don't like the idea of fat controllers and dumb templates, look elsewhere. Actually, there is Twig which is very nice, try that.
 
-However, if you are still here, here are the reasons why you would like the idea of dumb templates:
+However, if you are still on this page, here are the reasons why you would like the idea of dumb templates:
 
 - You can use the same templates with different backends. 
 - HTML designers don't need to know about control flow syntax. They still need to train themselves to have a blind eye on {{}} tags
@@ -59,7 +59,7 @@ However, if you are still here, here are the reasons why you would like the idea
 Yeah, that may sound a lot like a DYI-kit and it actually what Temple is. It just makes a first bold step to decouple presentation layer of your from the backend code.
  
 Any backend can use Temple right away if its controllers are fat enough to provide all the necessary data. 
-You can even use the same templates with backends written in different languages. The concept was proofed with C# and Perl
+You can even use the same templates with backends written in different languages. The concept was proofed successfully with C# and Perl ports.
 
 ## Modifiers
 
@@ -103,7 +103,7 @@ Goal of this library is to make a first step towards decoupling PHP code from pr
 
 The good news is that it is extendable without too much difficulties. Some clues are given in the comments for Temple class itself, so you do not need to always come back to this document to refresh your memory.
 
-You will definitely want to add more modifiers, so probably, you will want to extend calculateValue() method of one or more Modifier classes. If you make your own derivative of Modifier, you will need to extend Processor class, too, so that applyModifier() method uses the right classes.
+You will definitely want to add more modifiers, so probably, you will want to extend calculateValue() method of one or more Modifier-derived classes. If you make your own derivative of Modifier, you will need to extend Processor class, too, so that applyModifier() method uses the right classes.
 
 It would look like this to extend a Modifier class:
 
