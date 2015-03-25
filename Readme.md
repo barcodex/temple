@@ -2,6 +2,9 @@
 
 Temple is a lightweight text processor, suitable for usage in MVC systems that favour thick controllers.
 
+Even though template processing assumes reading the template contents from somewhere, Temple is only works with the texts, leaving the task of implementing template reading/writing/caching to the libraries that use the library. 
+If you are looking for an example of the project that implements Temple in this regard, take a look at [Templar](https://bitbucket.org/barcodex/templar)
+
 ## Installation
 
 Install Temple with Composer by adding a requirement into composer.json of your project:
@@ -17,7 +20,7 @@ Install Temple with Composer by adding a requirement into composer.json of your 
 or requiring it from the command line:
 
 ```bash
-composer require barcodex/template:* 
+composer require barcodex/temple:* 
 ```
 
 ## Basic Usage
@@ -189,14 +192,14 @@ Let's quickly take a look at all supported modifiers. They can be classified by 
 | tag           | ScalarModifier        | string         |            | Wraps the value with mustache {{ }}, thus making a Temple tag out of it |
 | length        | ScalarModifier, ArrayModifier | int | | Depending on value, returns either length of the string or the size of the array |
 | zero          | ScalarModifier        | string         |            | Explicitly converts an empty string to number zero |
-| wordcount     | ScalarModifier        | int            |            | Calculates number fo words in the text |
-| split         | ScalarModifier        | array          | delimiter: {'none' | 'space' | 'comma' | 'quotecomma' | 'colon' | 'semicolon' | 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
+| wordcount     | ScalarModifier        | int            |            | Calculates number of words in the text |
+| split         | ScalarModifier        | array          | delimiter: enum {'none' , 'space', 'comma',  'quotecomma', 'colon', 'semicolon', 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
 | unserialize   | ScalarModifier        | array/null     |            | Assumes that value is a JSON and tries to decode it. Null is returned is JSON could be decoded |
 | gravatar      | ScalarModifier        | string         | size: int (default: 50) | Assumes that the value is an email and generates a url for gravatar image of given size |
 
 As you can see, sometimes modifiers seem to be redundant, because of automatic type conversions that PHP does for us. 
 But Temple syntax is designed to be backend-agnostic, so that controllers written in other programming languages could also work with the same templates.
-That's why it is encouraged to tolerate this redundancy and use casting modifiers even if  
+That's why it is encouraged to tolerate this redundancy and use casting modifiers even if they seem unnecessary.
  
 ## Examples of modifiers
  
@@ -207,7 +210,10 @@ Even though we delegate most of the work to fat controllers, combining the modif
 Imagine that list of categories for the blog post is stored as JSON string in the database field 'categories'. We can show the number of assign categories without special preparation of the value in the controller:
 
 ```html
-<div class="blog-post-title">{{title}} <span class="blog-post-categories-count">{{categories|unserialize|count}}</span></div>
+<div class="blog-post-title">
+    {{title}} 
+    <span class="blog-post-categories-count">{{categories|unserialize|count}}</span>
+</div>
 ```
 
 ### Faking the conditionals
