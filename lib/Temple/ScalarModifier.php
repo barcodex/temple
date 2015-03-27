@@ -7,6 +7,7 @@ class ScalarModifier
 {
 	/** @inheritdoc */
 	public static function apply(
+        $name,
 		$value,
 		$modifierChain,
 		$params = array()
@@ -40,7 +41,7 @@ class ScalarModifier
 	}
 
     /** @inheritdoc */
-    public static function calculateValue($modifierName, $modifierParams, $value, $params)
+    public static function calculateValue($modifierName, $modifierParams, $value, $params = array())
     {
         switch ($modifierName) {
             case 'iftrue':
@@ -56,12 +57,12 @@ class ScalarModifier
                 }
                 break;
             case 'ifnull':
-                if (!is_null($value) && !empty($value)) {
+                if (!is_null($value)) {
                     return '';
                 }
                 break;
             case 'ifnotnull':
-                if (is_null($value) || empty($value)) {
+                if (is_null($value)) {
                     return '';
                 }
                 break;

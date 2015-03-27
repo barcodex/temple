@@ -51,12 +51,12 @@ abstract class Modifier
      * This is the method that does the job of modifying the value, so extend this if you want to introduce new modifiers.
      *
      * @param $modifierName
-     * @param $modifierParams
+     * @param array $modifierParams
      * @param $value
-     * @param $params
+     * @param array $params
      * @return mixed
      */
-    protected static function calculateValue($modifierName, $modifierParams, $value, $params)
+    protected static function calculateValue($modifierName, $modifierParams, $value, $params = array())
     {
         return $value;
     }

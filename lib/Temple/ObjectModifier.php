@@ -7,6 +7,7 @@ class ObjectModifier
 {
     /** @inheritdoc */
     public static function apply(
+        $name,
         $value,
         $modifierChain,
         $params = array()
@@ -41,7 +42,7 @@ class ObjectModifier
     }
 
     /** @inheritdoc */
-    public static function calculateValue($modifierName, $modifierParams, $value, $params)
+    public static function calculateValue($modifierName, $modifierParams, $value, $params = array())
     {
         switch ($modifierName) {
             case 'ifnull':
