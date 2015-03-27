@@ -1,6 +1,13 @@
 language: php
+
 php:
   - 5.5
+
 notifications:
   email:
     - barcodex@gmail.com
+
+before_script:
+    - composer self-update
+
+script: phpunit --coverage-text
