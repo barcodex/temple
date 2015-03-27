@@ -71,6 +71,9 @@ class NumericModifier
             case 'checkboxvalue':
                 $avalue = $value ? 'checked="checked"' : '';
                 break;
+            default:
+                $value = parent::calculateValue($modifierName, $modifierParams, $value, $params);
+                break;
         }
 
         return $value;

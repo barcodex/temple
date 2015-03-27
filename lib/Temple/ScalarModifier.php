@@ -205,6 +205,9 @@ class ScalarModifier
                 $email = md5(strtolower(trim($value)));
                 $value = "http://www.gravatar.com/avatar/$email?s=" . $size;
                 break;
+            default:
+                $value = parent::calculateValue($modifierName, $modifierParams, $value, $params);
+                break;
         }
 
         return $value;
