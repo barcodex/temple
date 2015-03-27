@@ -27,9 +27,9 @@ class Util
     public static function lav($needle, $haystack, $default)
     {
         if (is_array($haystack)) {
-            return isset($haystack[$needle]);
+            return isset($haystack[$needle]) ? $haystack[$needle] : $default;
         } elseif(is_object($haystack)) {
-            return isset($haystack[$needle]);
+            return isset($haystack->$needle) ? $haystack->$needle : $default;
         } else {
             return $default;
         }
