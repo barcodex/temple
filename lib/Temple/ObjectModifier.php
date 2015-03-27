@@ -44,41 +44,6 @@ class ObjectModifier
     /** @inheritdoc */
     public static function calculateValue($modifierName, $modifierParams, $value, $params = array())
     {
-        switch ($modifierName) {
-            case 'iftrue':
-            case 'stopiffalse':
-                $value = (bool) $value;
-                if (!$value || empty($value)) {
-                    return '';
-                }
-                break;
-            case 'iffalse':
-            case 'stopiftrue':
-                $value = (bool) $value;
-                if ($value && !empty($value)) {
-                    return '';
-                }
-                break;
-            case 'ifnull':
-            case 'stopifnotnull':
-                if (!is_null($value)) {
-                    return '';
-                }
-                break;
-            case 'ifnotnull':
-            case 'stopifnull':
-                if (is_null($value)) {
-                    return '';
-                }
-                break;
-            case "htmlcomment":
-                $value = '<!--' . print_r($value, 1) . '-->';
-                break;
-            case 'dump':
-                $value = print_r($value, 1);
-                break;
-        }
-
-        return $value;
+        return parent::calculateValue($modifierName, $modifierParams, $value, $params);
     }
 }

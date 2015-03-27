@@ -166,37 +166,37 @@ You see that we just replaced ScalarModifier with BetterScalarModifier here beca
 
 Let's quickly take a look at all supported modifiers. They can be classified by the class that applies them, by the number of parameters they expect and by the type of the value they return.
 
-| Modifier name | Modifier subclass(es) | Type of output | Parameters | Comment |
-| ------------- | --------------------- | -------------- | ---------- | ------- |
-| uppercase     | ScalarModifier        | string         |            |         |
-| lowercase     | ScalarModifier        | string         |            |         |
-| trim          | ScalarModifier        | string         |            |         |
-| htmlentities  | ScalarModifier        | string         |            | Escapes all HTML entities |
-| nohtml        | ScalarModifier        | string         |            | Strips all HTML tags |
-| htmlcomment   | *                     | string         |            | Wraps with HTML comment syntax |
-| dump          | *                     | string         |            | Wraps with HTML comment syntax |
-| loremipsum    | ScalarModifier        | string         |            | Injects some text placeholder aka Lorem Ipsum |
-| fixurl        | ScalarModifier        | string         |            | makes sure that URL has http:// prefix |
-| urlencode     | ScalarModifier        | string         |            | Encodes the URL |
-| dbsafe        | ScalarModifier        | string         |            | Sanitizes the value to be injected into SQL query |
-| jssafe        | ScalarModifier        | string         |            | Sanitizes the value to be used as JavaScript literal |
-| htmlsafe      | ScalarModifier        | string         |            | Sanitizes the value to be used as HTML tag attribute value |
-| shortener     | ScalarModifier        | string         | words: int, chars:int | Shortens the text to given number of words (or characters, if words param was not specified) |
-| replace       | ScalarModifier        | string         | fallback: field name, default: string | Replaces value with another field (defined by 'default') from processing parameters. If fallback field is not found, 'default' value can be set |
-| fixfloat      | ScalarModifier        | float          |            | Extracts a floating point number from the value |
-| fixint        | ScalarModifier        | int            |            | Extracts an integer from the value |
-| fixbool       | ScalarModifier        | bool           |            | Converts value to true or false |
-| iftrue (stopiffalse)   | * | empty string/original value |          | Keeps value intact if it evaluates to true, otherwise stops processing the pipeline and returns an empty string |
-| iffalse (stopiftrue    | * | empty string/original value |          | Keeps value intact if it evaluates to false, otherwise stops processing the pipeline and returns an empty string |
-| ifnull (stopifnotnull) | * | empty string/original value |          | Keeps value intact if it is null, otherwise stops processing the pipeline and returns an empty string |
-| ifnotnull (stopifnull) | * | empty string/original value |          | Keeps value intact if it is not null, otherwise stops processing the pipeline and returns an empty string |
-| tag           | ScalarModifier        | string         |            | Wraps the value with mustache {{ }}, thus making a Temple tag out of it |
-| length        | ScalarModifier, ArrayModifier | int | | Depending on value, returns either length of the string or the size of the array |
-| zero          | ScalarModifier        | string         |            | Explicitly converts an empty string to number zero |
-| wordcount     | ScalarModifier        | int            |            | Calculates number of words in the text |
-| split         | ScalarModifier        | array          | delimiter: enum {'none' , 'space', 'comma',  'quotecomma', 'colon', 'semicolon', 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
-| unserialize   | ScalarModifier        | array/null     |            | Assumes that value is a JSON and tries to decode it. Null is returned is JSON could be decoded |
-| gravatar      | ScalarModifier        | string         | size: int (default: 50) | Assumes that the value is an email and generates a url for gravatar image of given size |
+| Modifier name  | Modifier subclass(es) | Type of output | Parameters | Comment |
+| -------------- | --------------------- | -------------- | ---------- | ------- |
+| iftrue (stopiffalse)   | * | empty string/original value |           | Keeps value intact if it evaluates to true, otherwise stops processing the pipeline and returns an empty string |
+| iffalse (stopiftrue    | * | empty string/original value |           | Keeps value intact if it evaluates to false, otherwise stops processing the pipeline and returns an empty string |
+| ifnull (stopifnotnull) | * | empty string/original value |           | Keeps value intact if it is null, otherwise stops processing the pipeline and returns an empty string |
+| ifnotnull (stopifnull) | * | empty string/original value |           | Keeps value intact if it is not null, otherwise stops processing the pipeline and returns an empty string |
+| htmlcomment    | *                     | string         |            | Wraps with HTML comment syntax |
+| dump           | *                     | string         | pre        | Dumps the variable. optionally use "pre" to preserve line breaks when shown on HTML page |
+| length         | ScalarModifier, ArrayModifier | int | | Depending on value, returns either length of the string or the size of the array |
+| zero           | ScalarModifier        | string         |            | Explicitly converts an empty string to number zero |
+| uppercase      | ScalarModifier        | string         |            | |
+| lowercase      | ScalarModifier        | string         |            | |
+| trim           | ScalarModifier        | string         |            | |
+| htmlentities   | ScalarModifier        | string         |            | Escapes all HTML entities |
+| nohtml         | ScalarModifier        | string         |            | Strips all HTML tags |
+| loremipsum     | ScalarModifier        | string         |            | Injects some text placeholder aka Lorem Ipsum |
+| fixurl         | ScalarModifier        | string         |            | makes sure that URL has http:// prefix |
+| urlencode      | ScalarModifier        | string         |            | Encodes the URL |
+| dbsafe         | ScalarModifier        | string         |            | Sanitizes the value to be injected into SQL query |
+| jssafe         | ScalarModifier        | string         |            | Sanitizes the value to be used as JavaScript literal |
+| htmlsafe       | ScalarModifier        | string         |            | Sanitizes the value to be used as HTML tag attribute value |
+| shortener      | ScalarModifier        | string         | words: int, chars:int | Shortens the text to given number of words (or characters, if words param was not specified) |
+| replace        | ScalarModifier        | string         | fallback: field name, default: string | Replaces value with another field (defined by 'default') from processing parameters. If fallback field is not found, 'default' value can be set |
+| fixfloat       | ScalarModifier        | float          |            | Extracts a floating point number from the value |
+| fixint         | ScalarModifier        | int            |            | Extracts an integer from the value |
+| fixbool        | ScalarModifier        | bool           |            | Converts value to true or false |
+| tag            | ScalarModifier        | string         |            | Wraps the value with mustache {{ }}, thus making a Temple tag out of it |
+| wordcount      | ScalarModifier        | int            |            | Calculates number of words in the text |
+| split          | ScalarModifier        | array          | delimiter: enum {'none' , 'space', 'comma',  'quotecomma', 'colon', 'semicolon', 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
+| unserialize    | ScalarModifier        | array/null     |            | Assumes that value is a JSON and tries to decode it. Null is returned is JSON could be decoded |
+| gravatar       | ScalarModifier        | string         | size: int (default: 50) | Assumes that the value is an email and generates a url for gravatar image of given size |
 
 
 As you can see, sometimes modifiers seem to be redundant, because of automatic type conversions that PHP does for us. 
