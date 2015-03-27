@@ -55,17 +55,22 @@ class NumericModifier
                 }
                 break;
             case 'ifnull':
+            case 'stopifnotnull':
                 if (!is_null($value)) {
                     return '';
                 }
                 break;
             case 'ifnotnull':
+            case 'stopifnull':
                 if (is_null($value)) {
                     return '';
                 }
                 break;
             case "htmlcomment":
                 $value = "<!--$value-->";
+                break;
+            case "dump":
+                $value = print_r($value, 1);
                 break;
             case 'replace':
                 $default = Util::lavnn('default', $modifierParams, '');

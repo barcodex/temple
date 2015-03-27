@@ -39,7 +39,7 @@ use Temple\Processor;
 $template = 'Hello, {{name.first}} {{name.last}}!';
 $params = array('name' => array('first' => 'John', 'last' => 'Doe'));
 
-print Processor::doText($template, $params)) . PHP_EOL;
+print Processor::doText($template, $params) . PHP_EOL;
 ```
 
 As you can see from this snippet, tags are following the mustache form, pretty much like in Twig. 
@@ -173,7 +173,8 @@ Let's quickly take a look at all supported modifiers. They can be classified by 
 | trim          | ScalarModifier        | string         |            |         |
 | htmlentities  | ScalarModifier        | string         |            | Escapes all HTML entities |
 | nohtml        | ScalarModifier        | string         |            | Strips all HTML tags |
-| htmlcomment   | ScalarModifier        | string         |            | Wraps with HTML comment syntax |
+| htmlcomment   | *                     | string         |            | Wraps with HTML comment syntax |
+| dump          | *                     | string         |            | Wraps with HTML comment syntax |
 | loremipsum    | ScalarModifier        | string         |            | Injects some text placeholder aka Lorem Ipsum |
 | fixurl        | ScalarModifier        | string         |            | makes sure that URL has http:// prefix |
 | urlencode     | ScalarModifier        | string         |            | Encodes the URL |
@@ -185,10 +186,10 @@ Let's quickly take a look at all supported modifiers. They can be classified by 
 | fixfloat      | ScalarModifier        | float          |            | Extracts a floating point number from the value |
 | fixint        | ScalarModifier        | int            |            | Extracts an integer from the value |
 | fixbool       | ScalarModifier        | bool           |            | Converts value to true or false |
-| iftrue        | ScalarModifier        | string         |            | Keeps value intact if it evaluates to true, otherwise stops processing the pipeline and returns an empty string |
-| iffalse       | ScalarModifier        | string         |            | Keeps value intact if it evaluates to false, otherwise stops processing the pipeline and returns an empty string |
-| ifnull        | ScalarModifier        | string         |            | Keeps value intact if it is null, otherwise stops processing the pipeline and returns an empty string |
-| ifnotnull     | ScalarModifier        | string         |            | Keeps value intact if it is not null, otherwise stops processing the pipeline and returns an empty string |
+| iftrue (stopiffalse)   | * | empty string/original value |          | Keeps value intact if it evaluates to true, otherwise stops processing the pipeline and returns an empty string |
+| iffalse (stopiftrue    | * | empty string/original value |          | Keeps value intact if it evaluates to false, otherwise stops processing the pipeline and returns an empty string |
+| ifnull (stopifnotnull) | * | empty string/original value |          | Keeps value intact if it is null, otherwise stops processing the pipeline and returns an empty string |
+| ifnotnull (stopifnull) | * | empty string/original value |          | Keeps value intact if it is not null, otherwise stops processing the pipeline and returns an empty string |
 | tag           | ScalarModifier        | string         |            | Wraps the value with mustache {{ }}, thus making a Temple tag out of it |
 | length        | ScalarModifier, ArrayModifier | int | | Depending on value, returns either length of the string or the size of the array |
 | zero          | ScalarModifier        | string         |            | Explicitly converts an empty string to number zero |
@@ -196,6 +197,7 @@ Let's quickly take a look at all supported modifiers. They can be classified by 
 | split         | ScalarModifier        | array          | delimiter: enum {'none' , 'space', 'comma',  'quotecomma', 'colon', 'semicolon', 'newline'} | Splits the string by a delimiter, provided as modifier parameter |
 | unserialize   | ScalarModifier        | array/null     |            | Assumes that value is a JSON and tries to decode it. Null is returned is JSON could be decoded |
 | gravatar      | ScalarModifier        | string         | size: int (default: 50) | Assumes that the value is an email and generates a url for gravatar image of given size |
+
 
 As you can see, sometimes modifiers seem to be redundant, because of automatic type conversions that PHP does for us. 
 But Temple syntax is designed to be backend-agnostic, so that controllers written in other programming languages could also work with the same templates.

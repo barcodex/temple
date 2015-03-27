@@ -45,23 +45,27 @@ class ScalarModifier
     {
         switch ($modifierName) {
             case 'iftrue':
+            case 'stopiffalse':
                 $value = (bool) $value;
-                if (!$value || empty($value) || $value == 0) {
+                if (!$value || empty($value)) {
                     return '';
                 }
                 break;
             case 'iffalse':
+            case 'stopiftrue':
                 $value = (bool) $value;
                 if ($value && !empty($value)) {
                     return '';
                 }
                 break;
             case 'ifnull':
+            case 'stopifnotnull':
                 if (!is_null($value)) {
                     return '';
                 }
                 break;
             case 'ifnotnull':
+            case 'stopifnull':
                 if (is_null($value)) {
                     return '';
                 }
@@ -206,6 +210,9 @@ class ScalarModifier
                 break;
             case "htmlcomment":
                 $value = "<!--$value-->";
+                break;
+            case "dump":
+                $value = print_r($value, 1);
                 break;
             case 'unserialize':
                 $value = ($value == '') ? array() : json_decode($value, true);
