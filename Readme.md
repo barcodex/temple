@@ -242,3 +242,71 @@ Actually, PHP implementation of Temple explicitly converts the value to a boolea
 So if you trust PHP to convert nulls and empty strings to 'false', you can just use these modifiers without explicit typecast.
 But if you are planning to re-use templates between different language implementations of the processor, it never hurts to be more explicit.
 
+### Extension tips
+
+This library is intentionally kept as simple as possible but easily extendable. Parametrizable modifiers allow to implement nice small snippets.
+Imagine that you repeatedly do the same fixed formatting or micro-operation on data of specific kind - you can use modifiers with parameters to emulate functions that you would otherwise write in your controller. 
+What is really cool, is that modifiers still have access to the whole array of data that was passed to a text processor that later parsed this particular {{tag}} with its modifier.
+
+This makes possible to fake simple functions that use this data as inputs. 
+For the sake of example, let's imagine a book shop that has its inventory in euros, but sells online also in US dollars and British pounds. 
+We can easily write a modifier that prints out the price in session currency, automatically converting the price and adding a currency symbol. 
+Let's also assume that static method getRate($fromCurrency, $toCurrency) of some CurrrencyRate class is already implemented, and the code to show original price looks like this:
+
+```php
+<?php
+
+require_once "vendor/autoload.php";
+
+use Temple\Processor;
+
+$template = 'Book {{title}} by {{author}} costs EUR {{price}}';
+$book = array('title' => 'Moby Dick', 'author' => 'Herman Melville', 'price' => 12);
+
+print Processor::doText($template, $book)) . PHP_EOL;
+```
+
+So, we could implement the conversion every time when we prepare a value for processing like this:
+
+```php
+$template = 'Book {{title}} by {{author}} costs EUR {{price}}';
+$book = array('title' => 'Moby Dick', 'author' => 'Herman Melville', 'price' => 12);
+$book['price'] = ('EUR' == $_SESSION['currency']) 
+    ? $book['price']
+    : $book['price'] * CurrencyRate::getRate('EUR', $_SESSION['currency']);
+```
+
+but instead, we could move this to modifier:
+
+```php
+<?php
+
+use Temple\ScalarModifier;
+
+class BetterScalarModifier extends ScalarModifier 
+{
+    public static function calculateValue($modifierName, $modifierParams, $value, $params)
+    {
+        switch($modifierName) {
+            case 'currency': 
+                $price = ($_SESSION['currency'] == 'EUR') ? $value : $value * CurrencyRate::getRate('EUR', $_SESSION['currency']);
+                $value = $_SESSION['currency'] . ' ' . $price;
+                break;
+            default:
+                $value = parent::calculateValue($modifierName, $modifierParams, $value, $params);
+        }
+        
+        return $value;
+    }
+}
+```
+
+and then in our templates we just use the new 'currency' modifier, freeing controller of the routine task of checking the session currency, converting the rate and printing out the right currency code:
+
+```php
+$template = 'Book {{title}} by {{author}} costs {{price|currency}}'; // note: no hardcoded currency code here
+$book = array('title' => 'Moby Dick', 'author' => 'Herman Melville', 'price' => 12);
+```
+
+
+ 
