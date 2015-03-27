@@ -9,5 +9,6 @@ notifications:
 
 before_script:
     - composer self-update
+    - composer update
 
 script: phpunit --coverage-text
