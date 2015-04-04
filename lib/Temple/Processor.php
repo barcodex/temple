@@ -256,19 +256,6 @@ class Processor
 		return $output;
 	}
 
-	/**
-	 * Cuts off one-line comment from the line (comment is identified by the hash symbol
-	 *
-	 * @param $line
-	 *
-	 * @return string
-	 */
-	public static function cutOffComment($line) {
-		$parts = explode('#', trim($line), 2);
-
-		return trim(array_shift($parts));
-	}
-
 	public static function glueDecoder($glueCode)
 	{
 		$mapping = array(

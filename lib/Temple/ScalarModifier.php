@@ -81,6 +81,11 @@ class ScalarModifier
                 $delimiter = Util::lavnn('delimiter', $modifierParams, '');
                 $value = explode(Processor::glueDecoder($delimiter), $value);
                 break;
+			case "if":
+				if (!self::applyIf($modifierParams, $value, $params)) {
+					return '';
+				}
+				break;
             case "ifempty":
                 $default = Util::lavnn('default', $modifierParams, '');
                 $fallback = Util::lavnn('fallback', $modifierParams, '');
@@ -212,4 +217,14 @@ class ScalarModifier
 
         return $value;
     }
+
+	private static function applyIf($modifierParams, $value)
+	{
+		if (isset($modifierParams['equals'])) {
+			$expected = Util::lavnn('equals', $modifierParams, '');
+			return ($expected == $value);
+		}
+
+		return false;
+	}
 }
